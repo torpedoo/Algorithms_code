@@ -1,0 +1,157 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define F first
+#define S second
+#define pb push_back
+
+#define _ ios_base::sync_with_stdio(0);
+#define fastt ios_base::sync_with_stdio(false); cin.tie(0);
+#define prec  cout<<fixed<<setprecision(16);
+//# define sess cout<<endl;
+
+#define file freopen("000.txt","r",stdin);
+#define balsal cout<<"dhukse"<<endl;
+
+#define pi acos(-1.0)
+#define PI 3.141592653589793
+#define INF 1e9
+
+#define si(n)                        scanf("%d",&n)
+#define sii(a,b)                    scanf("%d%d",&a,&b)
+#define siii(a,b,c)                scanf("%d%d%d",&a,&b,&c)
+#define sl(a)                        scanf("%lld",&a)
+#define sll(a,b)                    scanf("%lld%lld",&a,&b)
+#define slll(a,b,c)                scanf("%lld%lld%lld",&a,&b,&c)
+#define sf(n)                       scanf("%lf",&n)
+#define ss(n)                       scanf("%s",n)
+
+#define it_multiset  std::multiset<int>::iterator it;
+#define it_mii std::map<int, int>::iterator it;
+
+#define MOD 1000000007
+#define mod  1000000007
+//#define con continue;
+//#define ret return
+#define mx_value 1e19
+
+
+int sett( int N,int pos)
+{
+    return N=N | (1<<pos);
+}
+int reset(int N,int pos)
+{
+    return N= N & ~(1<<pos);
+}
+bool check(int N,int pos)
+{
+    return (bool)(N & (1<<pos));
+}
+
+void update(long long &x, long long val)
+{
+    x = x+val;
+    if(x>mod)x-=mod;
+}
+
+void fast()
+{
+    ios_base::sync_with_stdio(0);
+    cin.tie(NULL), cout.tie(NULL);
+}
+
+int moves[4][2] = { {1,0} , {0,1} , {-1,0}, {0,-1} };
+
+typedef long long int ll;
+typedef  float flt;
+typedef double dbl;
+typedef vector<int >  vi;
+typedef pair < int , int > pii;
+typedef pair < ll , ll > pll;
+typedef map<int , int> mii;
+
+#define N 10010
+
+vector <  pair < int , int > > graph[N];
+
+
+int dist[N];
+
+int diajkstra(int s , int t)
+{
+    priority_queue< pair< int , int > , vector< pair< int, int > >, greater<pair <  int, int >  > > q;
+
+    dist[s] = 0;
+
+    q.push(make_pair(0,s));
+
+    while(!q.empty())
+    {
+        pii top = q.top();
+        q.pop();
+
+        int node = top.S;
+        int cost = top.F;
+
+        int loop = graph[node].size();
+
+        if(dist[node] < cost)continue;
+
+        for(int i=0; i<loop; i++)
+        {
+            pii cur_node = graph[node][i];
+
+            int next_node = cur_node.F;
+            int next_dis = cur_node.S;
+
+            if(dist[next_node]>dist[node]+next_dis)
+            {
+                dist[next_node] = cost+next_dis;
+                q.push(make_pair(dist[next_node], next_node));
+            }
+
+        }
+    }
+    return dist[t];
+}
+
+
+
+int main()
+{
+
+#ifndef ONLINE_JUDGE
+    file;
+#endif // ONLINE_JUDGE
+
+
+
+    int n,m;
+    sii(n,m);
+
+
+    for(int i=0; i<=n; i++)
+    {
+        dist[i] = 100000000;
+        graph[i].clear();
+    }
+
+
+    for(int i=0; i<m; i++)
+    {
+        int p,q,w;
+        siii(p,q,w);
+        graph[p].push_back( make_pair(q,w));
+        //graph[q].push_back(make_pair(p,w));  //for bidirectional code
+    }
+
+    int ans = diajkstra(0,n-1); //0 is the source and n-1 is the destination
+
+    cout<<"the distance is   "<<ans<<endl;
+
+
+
+
+
+        return 0;
+}
