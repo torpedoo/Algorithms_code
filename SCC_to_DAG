@@ -1,0 +1,247 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define F first
+#define S second
+#define pb push_back
+
+#define _ ios_base::sync_with_stdio(0);
+#define fastt ios_base::sync_with_stdio(false); cin.tie(0);
+#define prec  cout<<fixed<<setprecision(16);
+//# define sess cout<<endl;
+
+#define file freopen("000.txt","r",stdin);
+#define balsal cout<<"dhukse"<<endl;
+
+#define pi acos(-1.0)
+#define PI 3.141592653589793
+#define INF 1e9
+
+#define si(n)                        scanf("%d",&n)
+#define sii(a,b)                    scanf("%d%d",&a,&b)
+#define siii(a,b,c)                scanf("%d%d%d",&a,&b,&c)
+#define sl(a)                        scanf("%lld",&a)
+#define sll(a,b)                    scanf("%lld%lld",&a,&b)
+#define slll(a,b,c)                scanf("%lld%lld%lld",&a,&b,&c)
+#define sf(n)                       scanf("%lf",&n)
+#define ss(n)                       scanf("%s",n)
+
+#define it_multiset  std::multiset<int>::iterator it;
+#define it_mii std::map<int, int>::iterator it;
+
+#define MOD 1000000007
+#define mod  1000000007
+//#define con continue;
+//#define ret return
+#define mx_value 1e19
+
+
+long long int sett(long long int N,int pos)
+{
+    return N=N | (1<<pos);
+}
+int reset(int N,int pos)
+{
+    return N= N & ~(1<<pos);
+}
+bool check(int N,int pos)
+{
+    return (bool)(N & (1<<pos));
+}
+
+void update(long long &x, long long val)
+{
+    x = x+val;
+    if(x>mod)x-=mod;
+}
+
+void fast()
+{
+    ios_base::sync_with_stdio(0);
+    cin.tie(NULL), cout.tie(NULL);
+}
+
+int moves[4][2] = { {1,0} , {0,1} , {-1,0}, {0,-1} };
+
+typedef long long int ll;
+typedef  float flt;
+typedef double dbl;
+typedef vector<int >  vi;
+typedef pair < int , int > pii;
+typedef pair < ll , ll > pll;
+typedef map<int , int> mii;
+
+
+#define N 100100
+
+vi front_graph[N];
+vi reverse_graph[N];
+vi dag[N];
+
+int vis[N]= {};
+
+int size_of_scc[N];
+
+
+int bal[N];
+int bal_indx=0;
+int bal_cnt=0;
+int sal[N];
+int sal_indx=0;
+int sal_cnt=0;
+
+int par[N]= {};
+
+
+int fnd( int p)
+{
+    if(par[p]==p)return p;
+    par[p]=fnd(par[p]);
+    return par[p];
+}
+
+
+int uni( int a , int b)
+{
+    int u,v;
+    u=fnd(a);
+    v=fnd(b);
+    if(u==v)return 0;
+    else par[v]=u;
+    return 0;
+}
+
+int dfs(int node, int type)
+{
+    vis[node] = 1;
+    int loop;
+    if(type==1)loop = front_graph[node].size();
+    else loop = reverse_graph[node].size();
+
+    for(int i=0; i<loop; i++)
+    {
+        int next;
+        if(type) next = front_graph[node][i];
+        else next = reverse_graph[node][i];
+        if(!vis[next])
+        {
+            dfs(next,type);
+        }
+    }
+    if(type==1)
+    {
+        bal[bal_indx++] = node;
+        bal_cnt++;
+    }
+    else
+    {
+        sal[sal_indx++] = node;
+        sal_cnt++;
+    }
+}
+
+void reset()
+{
+    for(int i=0; i<=N; i++)
+    {
+        size_of_scc[i] = 0;
+        dag[i].clear();
+        vis[i]=0;
+        front_graph[i].clear();
+        reverse_graph[i].clear();
+        bal[i]=0;
+        sal[i]=0;
+        par[i] = i;
+    }
+
+    bal_indx=0;
+    sal_indx=0;
+
+    bal_cnt=0;
+    sal_cnt=0;
+}
+
+int main()
+{
+
+#ifndef ONLINE_JUDGE
+    file;
+#endif // ONLINE_JUDGE
+
+
+    reset();
+
+    int n,m;
+    sii(n,m);
+
+    for(int i=0; i<m; i++)
+    {
+        int p,q;
+        sii(p,q);
+        front_graph[p].pb(q);
+        reverse_graph[q].pb(p);
+    }
+
+
+    bal_cnt=0;
+    bal_indx=0;
+
+    for(int i=0; i<n; i++)
+    {
+        if(!vis[i])
+        {
+            dfs(i,1);
+        }
+    }
+
+
+    reverse(bal,bal+n);
+
+    int cnt = 0;
+
+    map < int , int > map_vertex;
+    map < int , int > map_dag_vertex;
+
+
+    memset(vis,0,sizeof(vis));
+
+
+    for(int i=0; i<n; i++)
+    {
+        if(!vis[bal[i]])
+        {
+            sal_indx=0;
+            sal_cnt=0;
+
+            dfs(bal[i],2);
+
+            cnt++;
+
+            cout<<"found an SCC having vertexes  :  "<<sal[0];
+
+            int prothom  = sal[0];
+            map_vertex[prothom] = cnt;
+
+            map_dag_vertex[cnt] = prothom;   //dag er kon index diye asol graph er kon index bujhay
+
+            for(int j=1; j<sal_cnt; j++)
+            {
+                cout<<"   "<<sal[j];
+                uni(prothom,sal[j]);
+
+                map_vertex[sal[j]] = cnt;  //asol graph r kon inedx dag er kon vertex bujhay
+
+                map_dag_vertex[cnt] = min( map_dag_vertex[cnt] , sal[j]);
+            }
+
+            cout<<endl;
+            cout<<"it represents  vertex number "<<cnt<<"  in DAG"<<endl;
+
+            size_of_scc[cnt] = sal_cnt;  //dag er koto number vertex er related scc te koyta vertex chilo
+        }
+    }
+
+
+
+
+    return 0;
+}
